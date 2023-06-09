@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Worker, createWorker } from 'tesseract.js';
 import './App.css';
 import { CropperRef, Cropper } from 'react-advanced-cropper';
@@ -89,19 +89,30 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState('')
   const [direction, setDirection] = useLocalStorage('direction', 'ltr')
+  const [worker, setWorker] = useState<Worker | null>(null)
+
+  const loadWorker = useCallback(async () => {
+    const w = await createWorker({
+      logger: m => console.log(m),
+    }) as unknown as Worker;
+    await w.load();
+    console.log(combineLanguages(langs))
+    await w.loadLanguage(combineLanguages(langs));
+    await w.initialize(combineLanguages(langs));
+    setWorker(w)
+  }, [langs])
+
+  useEffect(() => {
+    loadWorker()
+  }, [langs, loadWorker])
 
   async function recognize() {
     setLoading(true)
-    const worker = await createWorker({
-      logger: m => console.log(m),
-    }) as unknown as Worker;
-    await worker.load();
-    console.log(combineLanguages(langs))
-    await worker.loadLanguage(combineLanguages(langs));
-    await worker.initialize(combineLanguages(langs));
-    const { data: { text } } = await worker.recognize(cropperRef.current.getCanvas()?.toDataURL() as string ?? img);
-    setResult(text)
-    setLoading(false)
+    if (worker?.recognize) {
+      const { data: { text } } = await worker.recognize(cropperRef.current.getCanvas()?.toDataURL() as string ?? img);
+      setResult(text)
+      setLoading(false)
+    }
   }
 
   const onChange = (cropper: CropperRef) => {
@@ -219,7 +230,7 @@ function App() {
                 </div>
 
               </div>
-              <div className="px-4 py-2 bg-white rounded-b-lg className=bg-gray-800">
+              <div className="pt-1 bg-white rounded-b-lg className=bg-gray-800">
                 <textarea value={result} id="editor" rows={8} className={`block w-full px-0 text-sm text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
               </div>
             </div>
