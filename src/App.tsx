@@ -49,7 +49,7 @@ function SelectLaguage({ onChange, options, defaultValue }: SelectLaguageProps) 
           </svg>
 
         </div>
-        <input onFocus={() => setListVisible(true)} value={filter} onChange={e => setFilter(e.target.value)} type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 " placeholder={selected.name} required />
+        <input onKeyDown={e => e.key === 'Enter' ? onSelect(options?.[0]) : null} onFocus={() => setListVisible(true)} value={filter} onChange={e => setFilter(e.target.value)} type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 " placeholder={selected.name} required />
         {listVisible && (
           <div id="dropdown" className="z-40 bg-white divide-y divide-gray-100 shadow absolute w-full shadow-lg">
             <ul className="pl-5 text-start py-2 text-sm text-gray-700 w-full max-h-[200px] overflow-y-scroll hide-scroll" aria-labelledby="dropdownDefaultButton">
