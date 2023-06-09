@@ -1,12 +1,15 @@
 import { useState } from "react"
 
-export function useLocalStorage(key: string, defaultValue?: string): [string, (arg: string) => void] {
+
+
+export function useLocalStorage(key: string, defaultValue?: any): [any, (arg: any) => void] {
     const localValue = localStorage.getItem(key);
-    const [state, setState] = useState(localValue ?? defaultValue ?? '');
+    const localValueObj = localValue ? JSON.parse(localValue) : null
+    const [state, setState] = useState(localValueObj ?? defaultValue ?? {});
     
-    const setStateWrapper = (arg: string) => {
+    const setStateWrapper = (arg: any) => {
       setState(arg);
-      localStorage.setItem(key, arg);
+      localStorage.setItem(key, JSON.stringify(arg));
     };
     
     return [state, setStateWrapper];

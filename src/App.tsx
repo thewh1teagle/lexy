@@ -1,4 +1,4 @@
-import  { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Worker, createWorker } from 'tesseract.js';
 import './App.css';
 import { CropperRef, Cropper } from 'react-advanced-cropper';
@@ -6,18 +6,20 @@ import 'react-advanced-cropper/dist/style.css'
 import languages from './languages.json'
 import { useLocalStorage } from './useLocalStorage';
 
-
+function combineLanguages(langs: Array<any>) {
+  return langs.map(l => l.code).join('+')
+}
 
 interface SelectLaguageProps {
   onChange: (arg: any) => void
   options: any
-  defaultValue?: string
+  langs: Array<any>
+  setLangs: any
 }
 
-function SelectLaguage({ onChange, options, defaultValue }: SelectLaguageProps) {
+function SelectLaguage({ onChange, options, langs, setLangs }: SelectLaguageProps) {
   const [listVisible, setListVisible] = useState(false)
-  const defaultOption = options.find((o: any) => o.code === defaultValue)
-  const [selected, setSelected] = useState(defaultOption ?? { "code": "eng", "name": "English" })
+  const [selected, setSelected] = useState()
   const [filter, setFilter] = useState('')
   const divRef = useRef<HTMLDivElement>(null)
 
@@ -40,6 +42,7 @@ function SelectLaguage({ onChange, options, defaultValue }: SelectLaguageProps) 
     document.addEventListener('click', onClickOut)
     return () => document.removeEventListener('click', onClickOut)
   })
+
   return (
     <div ref={divRef}>
       <div className="relative w-full">
@@ -49,20 +52,33 @@ function SelectLaguage({ onChange, options, defaultValue }: SelectLaguageProps) 
           </svg>
 
         </div>
-        <input onKeyDown={e => e.key === 'Enter' ? onSelect(options?.[0]) : null} onFocus={() => setListVisible(true)} value={filter} onChange={e => setFilter(e.target.value)} type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 " placeholder={selected.name} required />
-        {listVisible && (
-          <div id="dropdown" className="z-40 bg-white divide-y divide-gray-100 shadow absolute w-full shadow-lg">
-            <ul className="pl-5 text-start py-2 text-sm text-gray-700 w-full max-h-[200px] overflow-y-scroll hide-scroll" aria-labelledby="dropdownDefaultButton">
-              {options.map((o: any) => (
-                <li key={o.code} onClick={() => onSelect(o)}>
-                  <span className="block px-4 py-2 hover:bg-gray-100">{o.name as string}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+        <input onKeyDown={e => e.key === 'Enter' ? onSelect(options?.[0]) : null} onFocus={() => setListVisible(true)} value={filter} onChange={e => setFilter(e.target.value)} type="text" id="voice-search" className="rounded-lg bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 "
+          placeholder='Select languages...' required
+        />
 
+        <div id="dropdown" className="z-40 bg-white absolute w-full shadow-lg" style={{ height: listVisible ? 'inherit' : '0px' }}>
+          <ul className={`bg-white pl-0 text-start shadow-lg rounded-b-lg text-sm text-gray-700 w-full transition-all duration-200 overflow-y-scroll hide-scroll" aria-labelledby="dropdownDefaultButton`} style={{ maxHeight: listVisible ? '200px' : '0px', visibility: listVisible ? 'visible' : 'hidden' }}>
+            {options.map((o: any) => (
+              <li key={o.code} onClick={() => onSelect(o)}>
+                <span className="block px-4 py-2 hover:bg-gray-100">{o.name as string}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className='flex flex-row flex-wrap gap-3 mt-3'>
+        {langs.map(lang => (
+          <div className={`py-1 shadow-lg text-black text-xs pl-2 gap-1 pr-2 rounded-full flex items-center uppercase`}>
+            {lang.name}
+            <svg onClick={() => langs.length > 1 ? setLangs(langs.filter(l => l !== lang)) : null} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className={`w-6 h-6 stroke-red-500 ${langs.length > 1 ? 'cursor-pointer' : null}`}>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+
+
+
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -70,11 +86,11 @@ function SelectLaguage({ onChange, options, defaultValue }: SelectLaguageProps) 
 function App() {
 
   const [img, setImage] = useState('')
-  const [language, setLanguage] = useLocalStorage('language', 'eng')
-  console.log(language)
+  const [langs, setLangs] = useLocalStorage('language', [{ "code": "eng", "name": "English" }])
   const cropperRef = useRef<any>(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState('')
+  const [direction, setDirection] = useLocalStorage('direction', 'ltr')
 
   async function recognize() {
     setLoading(true)
@@ -82,9 +98,9 @@ function App() {
       logger: m => console.log(m),
     }) as unknown as Worker;
     await worker.load();
-    console.log('set language => ', language)
-    await worker.loadLanguage(language);
-    await worker.initialize(language);
+    console.log(combineLanguages(langs))
+    await worker.loadLanguage(combineLanguages(langs));
+    await worker.initialize(combineLanguages(langs));
     const { data: { text } } = await worker.recognize(cropperRef.current.getCanvas()?.toDataURL() as string ?? img);
     setResult(text)
     setLoading(false)
@@ -138,8 +154,8 @@ function App() {
       </span>
       <div className='pt-8'>
         <SelectLaguage onChange={(lang) => {
-          setLanguage(lang.code)
-        }} options={languages} defaultValue={language} />
+          setLangs([...langs, lang])
+        }} options={languages} langs={langs} setLangs={setLangs} />
       </div>
       {!img && (
         <div onDragOver={onDragOver} onDrop={onDrop} className="flex items-center justify-center w-full mt-5">
@@ -188,12 +204,25 @@ function App() {
                       </svg>
 
                     </button>
+                    <button onClick={() => setDirection('ltr')} type="button" className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+                      </svg>
+
+                    </button>
+                    <button onClick={() => setDirection('rtl')} type="button" className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                      </svg>
+
+                    </button>
+
                   </div>
                 </div>
 
               </div>
               <div className="px-4 py-2 bg-white rounded-b-lg className=bg-gray-800">
-                <textarea value={result} id="editor" rows={8} className="block w-full px-0 text-sm text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400" placeholder="" required></textarea>
+                <textarea value={result} id="editor" rows={8} className={`block w-full px-0 text-sm text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
               </div>
             </div>
           </form>
