@@ -19,14 +19,12 @@ interface SelectLaguageProps {
 
 function SelectLaguage({ onChange, options, langs, setLangs }: SelectLaguageProps) {
   const [listVisible, setListVisible] = useState(false)
-  const [selected, setSelected] = useState()
   const [filter, setFilter] = useState('')
   const divRef = useRef<HTMLDivElement>(null)
 
   options = options.filter((i: any) => i.name.toLowerCase().includes(filter.toLowerCase()))
 
   function onSelect(option: any) {
-    setSelected(option)
     onChange(option)
     setListVisible(false)
     setFilter('')
