@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import  { useEffect, useState, useRef } from 'react';
 import { Worker, createWorker } from 'tesseract.js';
 import './App.css';
 import { CropperRef, Cropper } from 'react-advanced-cropper';
