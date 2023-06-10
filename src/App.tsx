@@ -29,10 +29,9 @@ function App() {
 
   const loadWorker = useCallback(async () => {
     const w = await createWorker({
-      logger: m => console.log(m),
+      // logger: m => console.log(m),
     }) as unknown as Worker;
     await w.load();
-    console.log(combineLanguages(langs))
     await w.loadLanguage(combineLanguages(langs));
     await w.initialize(combineLanguages(langs));
     setWorker(w)
