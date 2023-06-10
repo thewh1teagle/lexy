@@ -59,7 +59,7 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App w-[90%] md:w-[80%] lg:w-[60%] m-auto text-center pt-5">
       <span className='text-5xl font-bold text-blue-600 drop-shadow-lg'>
         Lexy
       </span>
@@ -78,7 +78,7 @@ function App() {
           <Cropper
             src={img}
             onChange={onChange}
-            className={'cropper w-full h-[400px] mt-5 rounded-lg'}
+            className={'cropper w-full h-[300px] mt-5 rounded-lg'}
             defaultSize={({ imageSize }) => {
               return {
                 width: imageSize.width,

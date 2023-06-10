@@ -1,0 +1,13 @@
+{
+  "autorun": true,
+  "terminals": [
+    {
+      "name": "App",
+      "focus": true,
+      "commands": [
+        "conda activate nodejs18",
+        "npm run dev"
+      ]
+    }
+  ]
+}
