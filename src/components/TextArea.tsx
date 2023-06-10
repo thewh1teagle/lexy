@@ -30,7 +30,7 @@ export default function TextArea({result}: {result: string}) {
             </div>
           </div>
           <div className="pt-1 bg-white rounded-b-lg className=bg-gray-800">
-            <textarea value={result} id="editor" rows={8} className={`block w-full px-0 text-sm text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
+            <textarea disabled value={result} id="editor" rows={8} className={`block w-full min-h-[300px] px-0 text-sm hover:outline-none active:outline-none outline-none text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
           </div>
         </div>
       </form>
