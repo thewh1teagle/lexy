@@ -59,7 +59,7 @@ function App() {
   }
 
   return (
-    <div className="App w-[90%] md:w-[80%] lg:w-[60%] m-auto text-center pt-5">
+    <div className="App w-[90%] md:w-[80%] lg:w-[60%] 2xl:w-[30%] m-auto text-center pt-5">
       <span className='text-5xl font-bold text-blue-600 drop-shadow-lg'>
         Lexy
       </span>
