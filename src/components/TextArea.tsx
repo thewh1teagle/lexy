@@ -3,7 +3,7 @@ import { useLocalStorage } from "../useLocalStorage"
 export default function TextArea({result}: {result: string}) {
     const [direction, setDirection] = useLocalStorage('direction', 'ltr')
     return (
-        <form className='mt-5'>
+        <form className='mt-5 result-area'>
         <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 className=bg-gray-700 className=border-gray-600">
           <div className="flex items-center justify-between px-3 py-2 border-b className=border-gray-600">
             <div className="flex flex-wrap items-center divide-gray-200 sm:divide-x className=divide-gray-600">
@@ -14,13 +14,13 @@ export default function TextArea({result}: {result: string}) {
                   </svg>
 
                 </button>
-                <button onClick={() => setDirection('ltr')} type="button" className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600">
+                <button onClick={() => setDirection('ltr')} type="button" className={`p-2 text-gray-500 rounded cursor-pointer ${direction === 'ltr' ? 'text-gray-900 bg-gray-100' : null} hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600`}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                   </svg>
 
                 </button>
-                <button onClick={() => setDirection('rtl')} type="button" className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600">
+                <button onClick={() => setDirection('rtl')} type="button" className={`p-2 text-gray-500 rounded cursor-pointer ${direction === 'rtl' ? 'text-gray-900 bg-gray-100' : null} hover:text-gray-900 hover:bg-gray-100 className=text-gray-400 className=hover:text-white className=hover:bg-gray-600`}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
                   </svg>
@@ -30,7 +30,7 @@ export default function TextArea({result}: {result: string}) {
             </div>
           </div>
           <div className="pt-1 bg-white rounded-b-lg className=bg-gray-800">
-            <textarea disabled value={result} id="editor" rows={8} className={`block w-full min-h-[300px] px-0 text-sm hover:outline-none active:outline-none outline-none text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
+            <textarea disabled value={result} id="editor" rows={8} className={`pl-2 pt-2 pr-2 pb-2 block w-full min-h-[300px] px-0 text-sm hover:outline-none active:outline-none outline-none text-gray-800 bg-white border-0 className=bg-gray-800 focus:ring-0 className=text-white className=placeholder-gray-400 ${direction === 'ltr' ? 'ltr' : 'rtl'}`} placeholder="" required></textarea>
           </div>
         </div>
       </form>

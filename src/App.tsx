@@ -24,7 +24,7 @@ function App() {
   const [langs, setLangs] = useLocalStorage('language', [{ "code": "eng", "name": "English" }])
   const cropperRef = useRef<any>(null)
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState('')
+  const [result, setResult] = useState<string | null>(null)
   const [worker, setWorker] = useState<Worker | null>(null)
 
   const loadWorker = useCallback(async () => {
@@ -47,6 +47,10 @@ function App() {
       const { data: { text } } = await worker.recognize(cropperRef.current.getCanvas()?.toDataURL() as string ?? img);
       setResult(text)
       setLoading(false)
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+      }, 10)
+
     }
   }
 
@@ -59,18 +63,21 @@ function App() {
   }
 
   return (
-    <div className="App w-[90%] md:w-[80%] lg:w-[60%] 2xl:w-[30%] m-auto text-center pt-5">
-      <span className='text-5xl font-bold text-blue-600 drop-shadow-lg'>
-        Lexy
-      </span>
+    <div className="App w-[90%] md:w-[80%] lg:w-[60%] 2xl:w-[30%] m-auto text-center pt-5 pb-5">
+      <a href="">
+        <span className='text-5xl font-bold text-blue-600 drop-shadow-lg block'>
+          Lexy
+        </span>
+      </a>
+      <span className='mt-2 block text-opacity-80 text-slate-700'>AI-powered image text extraction</span>
       <div className='pt-8'>
-        <SelectLaguage 
+        <SelectLaguage
           onChange={(lang) => {
             setLangs([...langs, lang])
-          }} 
-          options={languages as Array<Language>} 
-          langs={langs} 
-          setLangs={setLangs} 
+          }}
+          options={languages as Array<Language>}
+          langs={langs}
+          setLangs={setLangs}
         />
       </div>
       {!img ? <SelectImage onChange={arg => readImage(arg)} /> : (
@@ -99,6 +106,7 @@ function App() {
       )}
       <div>
         {result && <TextArea result={result} />}
+        {result === '' && <span className='text-red-500'>no text found in image</span>}
       </div>
     </div>
   );
