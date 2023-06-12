@@ -38,7 +38,7 @@ export default function SelectImage({ onChange }: { onChange: (arg: File) => voi
 
                     <p className="mb-2 text-sm text-gray-500 className=text-gray-400">Paste / Drop</p>
                 </div>
-                <input onChange={onSelect} id="dropzone-file" type="file" className="hidden" />
+                <input onChange={onSelect} id="dropzone-file" type="file" className="hidden" accept="image/png />
             </label>
         </div>
     )
